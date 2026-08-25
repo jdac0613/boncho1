@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>본초학 익히기</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main class="wrap">
+    <section class="hero">
+      <span class="hero-fish" aria-hidden="true"></span>
+      <h1>본초학 익히기</h1>
+      <p>오늘 공부할 범위를 고르고 바로 암기와 퀴즈를 시작해요.</p>
+    </section>
+
+    <section class="memory-scope card" style="margin-top:18px">
+      <div class="memory-scope-head">
+        <div>
+          <div class="small">TODAY'S SCOPE</div>
+          <h3>오늘 공부할 범위</h3>
+          <p class="small">선택한 소목차가 암기, 색칠퀴즈, 회상시험의 기본 범위가 됩니다.</p>
+        </div>
+        <div class="scope-count" id="scopeCount">0개 선택</div>
+      </div>
+      <div class="memory-scope-actions">
+        <button class="btn" id="all" type="button">전체 선택</button>
+        <button class="btn" id="none" type="button">전체 해제</button>
+      </div>
+      <div class="memory-scope-groups" id="scopeGroups"></div>
+      <div class="memory-scope-start">
+        <a class="btn primary big" href="memorize.html" id="startMemorize">선택 범위 암기 시작</a>
+      </div>
+      <div class="scope-error small" id="scopeError" aria-live="polite"></div>
+    </section>
+
+    <section class="menu-grid" style="margin-top:18px">
+      <a class="menu-card" href="toc.html"><div class="num">01</div><strong>목차</strong><p>전체 분류와 약재를 한눈에 편하게 살펴봅니다.</p></a>
+      <a class="menu-card" href="memorize.html"><div class="num">02</div><strong>암기</strong><p>선택해 둔 범위를 카드와 글자 가리기로 반복합니다.</p></a>
+      <a class="menu-card" href="color-quiz.html"><div class="num">03</div><strong>색칠퀴즈</strong><p>약재를 맞는 색으로 채워 보석십자수처럼 판을 완성합니다.</p></a>
+      <a class="menu-card" href="recall.html"><div class="num">04</div><strong>회상시험</strong><p>소목차만 보고 들어가는 약재를 직접 전부 떠올려 적습니다.</p></a>
+      <a class="menu-card" href="review.html"><div class="num">05</div><strong>오답모드</strong><p>틀린 약재만 다시 모아 분류를 재시험하고 하나씩 지웁니다.</p></a>
+      <a class="menu-card" href="records.html"><div class="num">06</div><strong>내 기록</strong><p>숙련도, 정답률, 회상률과 자주 틀린 약재를 한눈에 봅니다.</p></a>
+    </section>
+
+    <section class="section-title"><h2>오늘의 연못</h2><span class="small">기록은 이 브라우저에 자동 저장됩니다</span></section>
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><strong>전체 숙련도</strong><div class="small" id="pondMessage">아직 잔잔한 연못이에요.</div></div><span id="avg" class="stat" style="font-size:30px">0%</span></div><div class="progress-track" style="margin-top:12px"><div class="progress-bar" id="avgbar"></div></div></div>
+    <p class="footer-note">조금씩 채워갈수록 기억의 연못도 선명해집니다.</p>
+    <div id="mobile"></div>
+  </main>
+  <script src="data.js"></script><script src="common.js"></script>
+  <script>
+    document.getElementById('nav').innerHTML=nav('home');
+    document.getElementById('mobile').innerHTML=mobileNav();
+    const allLeaves=flattenSubcategories();
+    let selected=new Set(getScope());
+    const scopeGroups=document.getElementById('scopeGroups');
+    function updateCount(){document.getElementById('scopeCount').textContent=`${selected.size}개 소목차 선택`}
+    function renderPicker(){
+      scopeGroups.innerHTML=HERB_DATA.map((g,gi)=>`<section class="memory-scope-group"><div class="memory-scope-group-head"><strong>${g.group}</strong><button class="scope-mini" type="button" data-group="${gi}">그룹 전체</button></div>${g.categories.map(c=>`<div class="memory-scope-category"><h4>${c.name} <small>${c.ko}</small></h4><div class="memory-scope-chips">${c.subcategories.map(s=>`<label class="scope-chip ${selected.has(s.name)?'on':''}" style="--sig:${s.color}"><input type="checkbox" data-name="${s.name}" ${selected.has(s.name)?'checked':''}><span class="swatch" style="background:${s.color}"></span><span><strong>${s.name}</strong><small>${s.ko} · ${s.herbs.length}개</small></span></label>`).join('')}</div></div>`).join('')}</section>`).join('');
+      scopeGroups.querySelectorAll('input[type=checkbox]').forEach(x=>x.addEventListener('change',e=>{e.target.checked?selected.add(e.target.dataset.name):selected.delete(e.target.dataset.name);setScope([...selected]);e.target.closest('.scope-chip').classList.toggle('on',e.target.checked);updateCount()}));
+      scopeGroups.querySelectorAll('.scope-mini').forEach(btn=>btn.addEventListener('click',()=>{const g=HERB_DATA[+btn.dataset.group];const names=g.categories.flatMap(c=>c.subcategories.map(s=>s.name));const allOn=names.every(n=>selected.has(n));names.forEach(n=>allOn?selected.delete(n):selected.add(n));setScope([...selected]);renderPicker()}));
+      updateCount();
+    }
+    document.getElementById('all').onclick=()=>{selected=new Set(allLeaves.map(s=>s.name));setScope([...selected]);renderPicker()};
+    document.getElementById('none').onclick=()=>{selected=new Set();setScope([]);renderPicker()};
+    document.getElementById('startMemorize').addEventListener('click',e=>{if(!selected.size){e.preventDefault();document.getElementById('scopeError').textContent='먼저 공부할 소목차를 하나 이상 골라 주세요.'}});
+    renderPicker();
+    const a=avgProgress();document.getElementById('avg').textContent=a+'%';document.getElementById('avgbar').style.width=a+'%';document.getElementById('pondMessage').textContent=a<25?'아직 잔잔한 연못이에요.':a<60?'연잎 사이로 색이 조금씩 차오르고 있어요.':a<85?'분류 색이 제법 또렷해졌어요!':'거의 다 익었어요. 마지막까지 단단하게!';
+  </script>
+</body></html>

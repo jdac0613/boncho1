@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>암기 | 본초학 익히기</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main class="wrap">
+    <section class="section-title">
+      <div><div class="eyebrow">MEMORIZE</div><h2>암기</h2></div>
+      <span class="small">알겠음 +10 · 헷갈림 +4</span>
+    </section>
+
+    <section id="emptyScope" class="card" hidden>
+      <h3 style="margin-top:0">오늘 공부할 범위가 아직 없어요.</h3>
+      <p class="small">메인에서 먼저 소목차를 골라 주세요.</p>
+      <a class="btn primary" href="index.html">메인에서 범위 고르기</a>
+    </section>
+
+    <section id="studyArea" hidden>
+      <div class="study-topline">
+        <div class="study-mode-tabs">
+          <button class="btn primary" data-mode="card" type="button">분류 카드</button>
+          <button class="btn" data-mode="mask" type="button">글자 가리기</button>
+        </div>
+        <div class="study-scope-summary">
+          <span id="studySummary"></span>
+          <a class="btn" href="index.html">공부 범위 바꾸기</a>
+        </div>
+      </div>
+
+      <label class="shuffle-option" style="margin:12px 0 14px">
+        <input id="shuffleToggle" type="checkbox">
+        <span class="shuffle-check">↝</span>
+        <span><strong>선택한 약재 전부 랜덤으로 섞기</strong><small>체크하면 현재 선택 범위의 약재를 소목차 구분 없이 한 덱으로 섞어서 바로 암기합니다.</small></span>
+      </label>
+
+      <div class="memorize-layout">
+        <aside class="card side-list" id="side"></aside>
+        <section>
+          <div id="cardMode">
+            <div class="card memory-card" id="card"></div>
+            <div class="memory-actions">
+              <button class="btn" id="no" type="button">모름</button>
+              <button class="btn" id="maybe" type="button">헷갈림</button>
+              <button class="btn primary" id="yes" type="button">알겠음</button>
+            </div>
+          </div>
+          <div id="maskMode" hidden>
+            <div class="card mask-study-card">
+              <div class="mask-head">
+                <div><div class="small">소목차 암기판</div><h3 id="maskTitle"></h3></div>
+                <div class="mask-controls" id="maskControls">
+                  <button class="btn" data-level="0" type="button">전체</button><button class="btn" data-level="30" type="button">30%</button><button class="btn primary" data-level="50" type="button">50%</button><button class="btn" data-level="70" type="button">70%</button><button class="btn" data-level="100" type="button">100%</button>
+                </div>
+              </div>
+              <div class="small" id="maskHint">약재 글자의 일부를 가리고 빈칸을 머릿속으로 복원해 보세요.</div>
+              <div class="mask-herb-grid" id="maskGrid"></div>
+              <div class="mask-foot"><button class="btn" id="reshuffle" type="button">가림 위치 바꾸기</button><button class="btn primary" id="showAnswers" type="button">정답 보기</button></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+    <div id="mobile"></div>
+  </main>
+
+  <script src="data.js"></script><script src="common.js"></script>
+  <script>
+    document.getElementById('nav').innerHTML=nav('memorize');document.getElementById('mobile').innerHTML=mobileNav();
+    const allLeaves=flattenSubcategories();let leaves=scopeLeaves();
+    let si=0,hi=0,revealed=false,mode='card',maskLevel=50,maskSeed=Math.random(),shuffleAll=false,deck=[],deckIndex=0;
+    const studyArea=document.getElementById('studyArea'),emptyScope=document.getElementById('emptyScope'),side=document.getElementById('side'),card=document.getElementById('card'),cardMode=document.getElementById('cardMode'),maskMode=document.getElementById('maskMode');
+    function fisherYates(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+    function buildDeck(){deck=fisherYates(leaves.flatMap(s=>s.herbs.map(h=>({herb:h,leaf:s}))));deckIndex=0}
+    function updateSummary(){const count=leaves.reduce((n,s)=>n+s.herbs.length,0);document.getElementById('studySummary').textContent=shuffleAll?`${leaves.length}개 소목차 · 약재 ${count}개 랜덤 덱`:`${leaves.length}개 소목차 · 약재 ${count}개`}
+    function renderSide(){const p=getProgress();if(shuffleAll&&mode==='card'){side.innerHTML=`<div class="shuffle-side-note"><span class="shuffle-orbit">↝</span><strong>랜덤 덱</strong><p>선택한 ${leaves.length}개 소목차의 약재를 한꺼번에 섞어 출제 중입니다.</p><div class="small">${Math.min(deckIndex+1,deck.length)} / ${deck.length}</div></div>`;return}side.innerHTML=leaves.map((s,i)=>{const v=p[s.name]||0,alpha=.50+.50*v/100,weight=Math.min(800,600+Math.round(v*2));return `<div class="side-item ${i===si?'active':''}" data-i="${i}"><span class="swatch" style="display:inline-block;background:${s.color};margin-right:8px"></span><span class="progress-name" style="color:${withAlpha(s.color,alpha)};font-weight:${weight}">${s.name}</span><div class="small">${s.ko} · ${v}%</div></div>`}).join('');side.querySelectorAll('.side-item').forEach(x=>x.onclick=()=>{si=+x.dataset.i;hi=0;revealed=false;maskSeed=Math.random();render()})}
+    function currentCardItem(){if(shuffleAll)return deck[deckIndex%deck.length];const s=leaves[si],h=s.herbs[hi%s.herbs.length];return {herb:h,leaf:s}}
+    function renderCard(){const item=currentCardItem(),s=item.leaf,h=item.herb,pos=shuffleAll?`${deckIndex+1} / ${deck.length}`:`${hi+1} / ${s.herbs.length}`;card.innerHTML=`<div class="small">${pos}${shuffleAll?' · 랜덤 덱':''}</div><div class="herb">${h}</div>${revealed?`<div class="path"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${s.color};margin-right:6px"></span>${s.group} → ${s.category} → <strong>${s.name}</strong></div>`:`<button class="btn" id="reveal" style="margin-top:26px" type="button">분류 보기</button>`}`;const r=document.getElementById('reveal');if(r)r.onclick=()=>{revealed=true;renderCard()}}
+    function seeded(i,j){const x=Math.sin((i+1)*912.13+(j+1)*77.7+maskSeed*9999)*43758.5453;return x-Math.floor(x)}
+    function maskText(text,idx){if(maskLevel===0)return text;let charIndex=0;return [...text].map(ch=>{if(/\s|[()（）]/.test(ch))return ch;const should=maskLevel===100||seeded(idx,charIndex++)<(maskLevel/100);return should?'□':ch}).join('')}
+    function renderMask(){const s=leaves[si];document.getElementById('maskTitle').innerHTML=`<span class="legend-gem" style="--gem:${s.color}"></span>${s.ko} <small>${s.name}</small>`;document.getElementById('maskGrid').innerHTML=s.herbs.map((h,i)=>`<button class="mask-herb" type="button" data-i="${i}" title="눌러서 한 항목만 확인"><span class="mask-num">${String(i+1).padStart(2,'0')}</span><span class="mask-text">${maskText(h,i)}</span></button>`).join('');document.querySelectorAll('.mask-herb').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;b.querySelector('.mask-text').textContent=s.herbs[i];b.classList.add('peek')});document.querySelectorAll('#maskControls button').forEach(b=>b.classList.toggle('primary',+b.dataset.level===maskLevel));document.getElementById('maskHint').textContent=maskLevel===0?'전체 글자를 보며 순서와 덩어리를 익혀 보세요.':maskLevel===100?'완전 가림입니다. 번호와 약재 수만 보고 전부 떠올려 보세요.':`약 ${maskLevel}%의 글자를 가렸습니다. 빈칸을 복원한 뒤 눌러 확인하세요.`}
+    function render(){renderSide();if(mode==='card')renderCard();else renderMask()}
+    function next(delta){const item=currentCardItem();if(delta)addProgress(item.leaf.name,delta);revealed=false;if(shuffleAll){deckIndex++;if(deckIndex>=deck.length)buildDeck()}else{hi++;const s=leaves[si];if(hi>=s.herbs.length){hi=0;si=(si+1)%leaves.length}}render()}
+    document.getElementById('no').onclick=()=>next(0);document.getElementById('maybe').onclick=()=>next(4);document.getElementById('yes').onclick=()=>next(10);
+    document.getElementById('shuffleToggle').addEventListener('change',e=>{shuffleAll=e.target.checked;revealed=false;si=0;hi=0;if(shuffleAll)buildDeck();updateSummary();render()});
+    document.querySelectorAll('.study-mode-tabs button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.study-mode-tabs button').forEach(x=>x.classList.toggle('primary',x===b));cardMode.hidden=mode!=='card';maskMode.hidden=mode!=='mask';render()});
+    document.querySelectorAll('#maskControls button').forEach(b=>b.onclick=()=>{maskLevel=+b.dataset.level;maskSeed=Math.random();renderMask()});document.getElementById('reshuffle').onclick=()=>{maskSeed=Math.random();renderMask()};document.getElementById('showAnswers').onclick=()=>{document.querySelectorAll('.mask-herb').forEach((b,i)=>{b.querySelector('.mask-text').textContent=leaves[si].herbs[i];b.classList.add('peek')})};
+    if(!leaves.length){emptyScope.hidden=false}else{studyArea.hidden=false;updateSummary();render()}
+  </script>
+</body></html>

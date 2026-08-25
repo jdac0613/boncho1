@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>목차 | 본초학 익히기</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <main class="wrap">
+    <section class="section-title toc-title">
+      <div>
+        <div class="eyebrow">FULL CONTENTS</div>
+        <h2>전체 목차</h2>
+        <p class="small">범위 선택 없이 전체 구조를 한눈에 보는 페이지입니다. 소목차 글자색은 암기 진행도에 따라 점점 진해집니다.</p>
+      </div>
+      <a class="btn primary" href="memorize.html">암기 범위 고르기</a>
+    </section>
+
+    <div class="toc-overview" id="toc"></div>
+    <div id="mobile"></div>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script>
+    document.getElementById('nav').innerHTML=nav('toc');
+    document.getElementById('mobile').innerHTML=mobileNav();
+    const root=document.getElementById('toc');
+    const p=getProgress();
+
+    root.innerHTML=HERB_DATA.map((g,gi)=>{
+      const groupLeaves=g.categories.flatMap(c=>c.subcategories);
+      const done=groupLeaves.length?Math.round(groupLeaves.reduce((a,s)=>a+(p[s.name]||0),0)/groupLeaves.length):0;
+      return `<section class="toc-group card">
+        <div class="toc-group-head">
+          <div>
+            <span class="toc-group-no">${String.fromCharCode(65+gi)}</span>
+            <h2>${g.group}</h2>
+          </div>
+          <span class="toc-group-progress">${done}%</span>
+        </div>
+        <div class="toc-categories">
+          ${g.categories.map(c=>`<article class="toc-category">
+            <h3>${c.name} <small>${c.ko}</small></h3>
+            <div class="toc-subs">
+              ${c.subcategories.map(s=>{
+                const v=p[s.name]||0;
+                const alpha=.42+.58*v/100;
+                const herbNames=s.herbs.map(h=>plainHerb(h)).join(' · ');
+                return `<div class="toc-sub" style="--sig:${s.color}">
+                  <div class="toc-sub-title">
+                    <span class="swatch" style="background:${s.color}"></span>
+                    <strong style="color:${withAlpha(s.color,alpha)};font-weight:${Math.min(850,600+Math.round(v*2.2))}">${s.name}</strong>
+                    <span>${s.ko}</span>
+                    <em>${v}%</em>
+                  </div>
+                  <p>${herbNames}</p>
+                </div>`;
+              }).join('')}
+            </div>
+          </article>`).join('')}
+        </div>
+      </section>`;
+    }).join('');
+  </script>
+</body>
+</html>

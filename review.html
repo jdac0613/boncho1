@@ -1,0 +1,24 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오답모드 | 본초학</title><link rel="stylesheet" href="styles.css"></head><body><div id="nav"></div><main class="wrap"><section class="section-title"><div><div class="eyebrow">REVIEW POND</div><h2>오답모드</h2></div><span class="small" id="remain"></span></section><div class="notice">색칠퀴즈와 회상시험에서 틀린 약재만 모았습니다. 정답을 맞힐 때마다 해당 약재의 오답 횟수가 1회씩 줄고, 0이 되면 목록에서 사라집니다.</div><div class="review-layout" style="margin-top:16px"><aside class="card review-list" id="reviewList"></aside><section class="card review-card" id="reviewCard"></section></div><div id="mobile"></div></main><script src="data.js"></script><script src="common.js"></script><script>
+document.getElementById('nav').innerHTML=nav('review');document.getElementById('mobile').innerHTML=mobileNav();
+let items=[],currentIndex=0,locked=false;
+function pickOptions(correct){
+  const all=flattenSubcategories();
+  const sameCat=all.filter(s=>s.name!==correct.name&&s.category===correct.category);
+  const sameGroup=all.filter(s=>s.name!==correct.name&&s.group===correct.group&&!sameCat.some(x=>x.name===s.name));
+  const others=all.filter(s=>s.name!==correct.name&&!sameCat.some(x=>x.name===s.name)&&!sameGroup.some(x=>x.name===s.name));
+  const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+  const picks=[];
+  [sameCat,sameGroup,others].forEach(pool=>shuffle(pool).forEach(s=>{if(picks.length<3&&!picks.some(x=>x.name===s.name))picks.push(s)}));
+  return shuffle([correct,...picks]);
+}
+function refreshItems(){items=allMistakeItems();if(currentIndex>=items.length)currentIndex=0;document.getElementById('remain').textContent=items.length?`${items.length}개 약재 남음`:'오답 0개';}
+function renderList(){const root=document.getElementById('reviewList');root.innerHTML=items.length?items.map((x,i)=>`<button type="button" class="review-herb ${i===currentIndex?'active':''}" data-i="${i}" style="width:100%;border:0;background:${i===currentIndex?'#eef7ec':'transparent'};color:inherit;cursor:pointer;text-align:left"><span><strong>${plainHerb(x.herb)}</strong><span class="small" style="display:block">${x.leaf.ko}</span></span><span class="tag miss">${x.count}회</span></button>`).join(''):`<div class="empty-state"><div class="pond-icon"></div><h3>연못이 깨끗해졌어요!</h3><p>현재 다시 볼 오답 약재가 없습니다.</p></div>`;root.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{currentIndex=+b.dataset.i;locked=false;render()})}
+function renderCard(){const root=document.getElementById('reviewCard');if(!items.length){root.innerHTML=`<div class="empty-state"><div class="pond-icon"></div><h3>오답 정복 완료</h3><p>새 오답이 생기면 이곳에 다시 모아둘게요.</p><a class="btn primary" href="color-quiz.html">색칠퀴즈 풀러 가기</a></div>`;return}
+  const x=items[currentIndex],s=x.leaf,opts=pickOptions(s);locked=false;
+  root.innerHTML=`<div class="small">오답 ${x.count}회 · 이 약재는 어느 소목차에 속할까요?</div><div class="review-word">${x.herb}</div><div class="review-options">${opts.map(o=>`<button class="review-option" type="button" data-name="${o.name}" style="border-bottom:7px solid ${o.color}">${o.ko}<span class="small" style="display:block">${o.name}</span></button>`).join('')}</div><div id="feedback" class="small" style="min-height:30px;margin-top:16px"></div>`;
+  root.querySelectorAll('.review-option').forEach(btn=>btn.onclick=()=>answer(btn,x,s));
+}
+function answer(btn,x,s){if(locked)return;locked=true;const ok=btn.dataset.name===s.name;const fb=document.getElementById('feedback');if(ok){btn.classList.add('good');const left=reduceMistake(x.herb,1);addProgress(s.name,3);fb.innerHTML=`정답! <strong style="color:${s.color}">${s.ko}</strong>입니다. ${left?`이 약재 오답 ${left}회 남음`:'이 약재는 오답 연못에서 빠졌어요!'}`;setTimeout(()=>{refreshItems();if(items.length&&currentIndex>=items.length)currentIndex=0;render()},700)}else{btn.classList.add('bad');addMistake(x.herb);fb.textContent='아직 아니에요. 정답 색과 이름을 한 번 더 떠올려 보세요.';setTimeout(()=>{locked=false;btn.classList.remove('bad')},520)}}
+function render(){refreshItems();renderList();renderCard()}
+render();
+</script></body></html>
