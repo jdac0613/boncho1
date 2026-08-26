@@ -42,7 +42,11 @@
         <aside class="card side-list" id="side"></aside>
         <section>
           <div id="cardMode">
-            <div class="card memory-card" id="card"></div>
+            <div class="memory-card-shell">
+              <button class="memory-arrow" id="prevCard" type="button" aria-label="이전 약재"><span>‹</span></button>
+              <div class="card memory-card" id="card"></div>
+              <button class="memory-arrow" id="nextCard" type="button" aria-label="다음 약재"><span>›</span></button>
+            </div>
             <div class="memory-actions">
               <button class="btn" id="no" type="button">모름</button>
               <button class="btn" id="maybe" type="button">헷갈림</button>
@@ -84,8 +88,10 @@
     function maskText(text,idx){if(maskLevel===0)return text;let charIndex=0;return [...text].map(ch=>{if(/\s|[()（）]/.test(ch))return ch;const should=maskLevel===100||seeded(idx,charIndex++)<(maskLevel/100);return should?'□':ch}).join('')}
     function renderMask(){const s=leaves[si];document.getElementById('maskTitle').innerHTML=`<span class="legend-gem" style="--gem:${s.color}"></span>${s.ko} <small>${s.name}</small>`;document.getElementById('maskGrid').innerHTML=s.herbs.map((h,i)=>`<button class="mask-herb" type="button" data-i="${i}" title="눌러서 한 항목만 확인"><span class="mask-num">${String(i+1).padStart(2,'0')}</span><span class="mask-text">${maskText(h,i)}</span></button>`).join('');document.querySelectorAll('.mask-herb').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;b.querySelector('.mask-text').textContent=s.herbs[i];b.classList.add('peek')});document.querySelectorAll('#maskControls button').forEach(b=>b.classList.toggle('primary',+b.dataset.level===maskLevel));document.getElementById('maskHint').textContent=maskLevel===0?'전체 글자를 보며 순서와 덩어리를 익혀 보세요.':maskLevel===100?'완전 가림입니다. 번호와 약재 수만 보고 전부 떠올려 보세요.':`약 ${maskLevel}%의 글자를 가렸습니다. 빈칸을 복원한 뒤 눌러 확인하세요.`}
     function render(){renderSide();if(mode==='card')renderCard();else renderMask()}
-    function next(delta){const item=currentCardItem();if(delta)addProgress(item.leaf.name,delta);revealed=false;if(shuffleAll){deckIndex++;if(deckIndex>=deck.length)buildDeck()}else{hi++;const s=leaves[si];if(hi>=s.herbs.length){hi=0;si=(si+1)%leaves.length}}render()}
+    function moveCard(step){revealed=false;if(shuffleAll){if(!deck.length)buildDeck();deckIndex=(deckIndex+step+deck.length)%deck.length}else if(step>0){hi++;const s=leaves[si];if(hi>=s.herbs.length){hi=0;si=(si+1)%leaves.length}}else{hi--;if(hi<0){si=(si-1+leaves.length)%leaves.length;hi=leaves[si].herbs.length-1}}render()}
+    function next(delta){const item=currentCardItem();if(delta)addProgress(item.leaf.name,delta);moveCard(1)}
     document.getElementById('no').onclick=()=>next(0);document.getElementById('maybe').onclick=()=>next(4);document.getElementById('yes').onclick=()=>next(10);
+    document.getElementById('prevCard').onclick=()=>moveCard(-1);document.getElementById('nextCard').onclick=()=>moveCard(1);
     document.getElementById('shuffleToggle').addEventListener('change',e=>{shuffleAll=e.target.checked;revealed=false;si=0;hi=0;if(shuffleAll)buildDeck();updateSummary();render()});
     document.querySelectorAll('.study-mode-tabs button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.study-mode-tabs button').forEach(x=>x.classList.toggle('primary',x===b));cardMode.hidden=mode!=='card';maskMode.hidden=mode!=='mask';render()});
     document.querySelectorAll('#maskControls button').forEach(b=>b.onclick=()=>{maskLevel=+b.dataset.level;maskSeed=Math.random();renderMask()});document.getElementById('reshuffle').onclick=()=>{maskSeed=Math.random();renderMask()};document.getElementById('showAnswers').onclick=()=>{document.querySelectorAll('.mask-herb').forEach((b,i)=>{b.querySelector('.mask-text').textContent=leaves[si].herbs[i];b.classList.add('peek')})};
