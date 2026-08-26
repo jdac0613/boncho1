@@ -108,7 +108,7 @@ body{
   background-color:#eef8ef;
   background-image:
     linear-gradient(rgba(246,252,246,.80),rgba(240,249,242,.84)),
-    url('assets/pond-background.svg');
+    url('assets/pond-ui-reference.png');
   background-size:cover,cover;
   background-position:center top,center top;
   background-attachment:fixed,fixed;
@@ -173,7 +173,7 @@ body::before,body::after{display:none}
   position:absolute;
   width:310px;height:190px;
   right:-42px;bottom:-55px;
-  background:url('assets/pond-background.svg') 96% 92%/920px auto no-repeat;
+  background:url('assets/pond-ui-reference.png') 96% 92%/920px auto no-repeat;
   opacity:.19;
   pointer-events:none;
   -webkit-mask-image:linear-gradient(120deg,transparent 4%,#000 42%);
@@ -185,7 +185,7 @@ body::before,body::after{display:none}
 .menu-card{min-height:170px;padding:24px;border-radius:26px!important}
 .menu-card::after{
   width:120px;height:84px;right:-12px;bottom:-9px;
-  background-image:url('assets/pond-background.svg');
+  background-image:url('assets/pond-ui-reference.png');
   background-size:760px auto;
   background-position:95% 89%;
   opacity:.14;
@@ -209,7 +209,7 @@ main.wrap::before{
   height:310px;
   right:-50px;
   bottom:-25px;
-  background:url('assets/pond-background.svg') 94% 92%/1180px auto no-repeat;
+  background:url('assets/pond-ui-reference.png') 94% 92%/1180px auto no-repeat;
   opacity:.20;
   filter:saturate(.84);
   -webkit-mask-image:radial-gradient(ellipse at center,#000 35%,transparent 76%);
@@ -249,239 +249,100 @@ main.wrap::before{
 @media(max-width:760px){.gem-board{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 3px}.gem-tile{min-height:76px}.gem-label{font-size:12px}.color-theme-banner{padding:13px 14px}}
 @media(max-width:430px){.gem-board{grid-template-columns:repeat(3,minmax(0,1fr))}.theme-dots{display:none}.palette-group{padding:9px}.gem-legend-btn{font-size:11px!important}}
 
-/* v4 clean pond background: decorative art only, never a UI screenshot */
-body{
-  background-image:linear-gradient(rgba(252,253,247,.72),rgba(241,249,241,.70)),url('assets/pond-background.svg');
-  background-size:cover;
-  background-position:center top;
-  background-attachment:fixed;
-}
-.memory-scope::after,.menu-card::after,main.wrap::before{background-image:none!important;}
 
-
-/* ===== v6 watercolor asset theme: use generated watercolor illustrations, not SVG UI references ===== */
-.pond-ambience{display:none!important}
+/* ===== modern reset: remove cropped generated images and screenshot-like background ===== */
 body{
   background:
-    radial-gradient(circle at 18% 16%, rgba(255,255,255,.72), rgba(255,255,255,0) 22%),
-    linear-gradient(180deg, rgba(252,253,249,.93), rgba(239,247,241,.92)),
-    #edf7ef !important;
-  min-height:100vh;
+    radial-gradient(circle at 12% 10%, rgba(232,245,234,.85), transparent 22%),
+    radial-gradient(circle at 88% 14%, rgba(239,248,240,.92), transparent 20%),
+    linear-gradient(180deg,#f8fcf8 0%, #eef7f0 48%, #f7fbf8 100%) !important;
+  min-height:100%;
 }
-body::before,
-body::after{
-  content:"";
-  display:block!important;
-  position:fixed;
-  z-index:-1;
-  pointer-events:none;
-  background-repeat:no-repeat;
-  background-size:contain;
-  filter:saturate(.96);
-  opacity:.9;
-}
-body::before{
-  width:min(440px,34vw);
-  height:min(320px,26vw);
-  left:-24px;
-  bottom:-18px;
-  background-image:url('assets/corner-lotus-left.png');
-}
-body::after{
-  width:min(420px,32vw);
-  height:min(320px,24vw);
-  right:-16px;
-  bottom:-8px;
-  background-image:url('assets/corner-lotus-right.png');
-}
-main.wrap::before{
-  content:"";
-  position:fixed;
-  z-index:-1;
-  top:56px;
-  right:0;
-  width:min(360px,28vw);
-  height:min(190px,16vw);
-  pointer-events:none;
-  background:url('assets/corner-leaves-top-right.png') right top/contain no-repeat !important;
-  opacity:.55;
-  mask-image:linear-gradient(180deg,#000 30%,transparent 100%);
-}
+body::before, body::after, main.wrap::before{display:none !important; content:none !important; background:none !important;}
+.pond-ambience{display:block !important; opacity:.52;}
+
+/* remove inserted cropped images */
+.hero-art,.menu-ill,.pond-footer-art{display:none !important;}
+.memory-scope::before,.memory-scope::after,.menu-card::before,.menu-card::after,.palette-group::after{display:none !important; background-image:none !important;}
+
+/* simple modern lotus theme */
 .site-header{
-  background:rgba(251,253,249,.84)!important;
-  border-bottom:1px solid rgba(204,227,207,.75)!important;
-  box-shadow:0 8px 28px rgba(92,132,99,.06);
+  background:rgba(251,253,250,.92) !important;
+  border-bottom:1px solid rgba(214,232,217,.9) !important;
+  box-shadow:0 8px 24px rgba(96,129,102,.04) !important;
+  backdrop-filter:blur(12px);
 }
-.brand{position:relative;padding-left:52px;font-family:"Batang","Nanum Myeongjo",serif!important;font-size:25px!important;color:#2f5a39!important}
-.brand::before{
-  content:"";
-  position:absolute;
-  left:0; top:50%; transform:translateY(-50%);
-  width:40px; height:40px;
-  background:url('assets/corner-lotus-top-left.png') left center/120px auto no-repeat;
-  border-radius:50%;
-}
-.wrap{max-width:1240px!important;padding-top:24px!important}
-.card,.menu-card,.memory-scope,.toc-group,.memory-card,.mask-study-card,.review-card,.record-card,.gem-shell,.palette-group,.notice{
-  background:rgba(255,255,252,.88)!important;
-  border:1px solid rgba(212,231,214,.85)!important;
-  box-shadow:0 18px 44px rgba(85,122,91,.08)!important;
-  backdrop-filter:blur(10px);
-}
-.hero{
-  min-height:290px!important;
-  border-radius:34px!important;
-  padding:46px 40px 40px!important;
-  background:
-    linear-gradient(90deg, rgba(252,253,249,.97) 0%, rgba(252,253,249,.94) 40%, rgba(252,253,249,.62) 68%, rgba(252,253,249,.38) 100%),
-    url('assets/hero-pond-soft.png') right center/cover no-repeat !important;
-  border:1px solid rgba(208,229,211,.84)!important;
+.brand{font-family:"Batang","Nanum Myeongjo",serif !important;color:#315b3b !important;font-size:24px !important;}
+.brand::before{content:"✿" !important;color:#8fbc8f !important;background:none !important;transform:none !important;position:static !important;width:auto !important;height:auto !important;margin-right:8px;}
+.nav a:not(.brand){background:rgba(255,255,255,.58);border:1px solid rgba(218,232,220,.8);}
+.nav a.active,.nav a:hover{background:rgba(225,241,227,.9);border-color:rgba(196,221,200,.95);color:#31583d;}
+
+.hero.hero-simple,.hero.hero-watercolor,.hero{
+  min-height:250px !important;
+  padding:48px 40px 38px !important;
+  background:linear-gradient(135deg, rgba(255,255,252,.96), rgba(242,249,243,.94)) !important;
+  border:1px solid rgba(214,232,216,.92) !important;
+  border-radius:32px !important;
+  box-shadow:0 18px 44px rgba(86,120,92,.08) !important;
+  position:relative;
   overflow:hidden;
 }
 .hero::before{
-  content:"";
-  position:absolute;
-  right:-4px; top:-4px;
-  width:230px; height:118px;
-  background:url('assets/corner-leaves-top-right.png') right top/contain no-repeat;
-  opacity:.55;
+  content:"" !important;
+  position:absolute !important;
+  right:42px; top:20px;
+  width:122px; height:106px;
+  background:url('assets/lotus.svg') center/contain no-repeat !important;
+  opacity:.22; display:block !important;
 }
 .hero::after{
-  content:"";
-  position:absolute;
-  left:-8px; bottom:-24px;
-  width:250px; height:132px;
-  background:url('assets/corner-lotus-left.png') left bottom/contain no-repeat;
-  opacity:.45;
+  content:"" !important;
+  position:absolute !important;
+  right:14px; bottom:-10px;
+  width:185px; height:122px;
+  background:url('assets/lilypad.svg') center/contain no-repeat !important;
+  opacity:.16; display:block !important;
 }
-.hero-fish{display:block!important;right:32px!important;bottom:20px!important;top:auto!important;width:126px!important;height:76px!important;background:url('assets/side-fish-right.png') center/contain no-repeat!important;opacity:.88!important;transform:none!important}
-.hero h1{position:relative;z-index:1;font-size:clamp(40px,5.2vw,64px)!important;margin-bottom:10px!important;color:#315a3a!important}
-.hero p{position:relative;z-index:1;max-width:620px;color:#607b67!important}
+.hero-fish{display:block !important;width:92px !important;height:60px !important;right:150px !important;top:36px !important;opacity:.22 !important;background:url('assets/fish.svg') center/contain no-repeat !important;transform:none !important;}
+.hero h1{color:#315b3b !important;text-shadow:none !important;margin-bottom:8px !important;}
+.hero p{color:#6f8574 !important;max-width:620px;}
 
-.menu-grid{gap:18px!important}
+.card,.menu-card,.memory-scope,.toc-group,.memory-card,.mask-study-card,.review-card,.record-card,.gem-shell,.palette-group,.notice{
+  background:rgba(255,255,252,.92) !important;
+  border:1px solid rgba(217,234,219,.92) !important;
+  box-shadow:0 16px 36px rgba(89,124,95,.06) !important;
+  backdrop-filter:none !important;
+}
+
 .menu-card{
-  min-height:282px!important;
-  padding:22px 20px 22px!important;
-  display:flex!important;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  text-align:center;
-  border-radius:28px!important;
+  min-height:170px !important;
+  padding:24px 22px 20px !important;
+  align-items:flex-start !important;
+  text-align:left !important;
+  justify-content:flex-start !important;
   overflow:hidden;
 }
-.menu-card::before{
-  content:"";
-  width:180px;
-  height:134px;
-  margin:0 auto 14px;
-  background:center/contain no-repeat;
-  display:block;
-}
-.menu-card::after{display:none!important}
-.menu-card .num{
-  position:absolute;left:14px;top:14px;
-  width:34px!important;height:34px!important;border-radius:12px!important;
-  font-size:14px!important;font-weight:800!important;
-  box-shadow:none!important;background:rgba(255,255,255,.74)!important;border:1px solid rgba(214,229,216,.9);
-}
-.menu-card strong{font-size:28px!important;font-family:"Batang","Nanum Myeongjo",serif!important;line-height:1.15;color:#365741!important}
-.menu-card p{max-width:240px!important;margin-top:10px!important;font-size:14px!important;line-height:1.7!important;color:#768a7c!important}
-.menu-card:nth-child(1)::before{background-image:url('assets/watercolor-top-mist.png')}
-.menu-card:nth-child(2)::before{background-image:url('assets/illustration-memory.png')}
-.menu-card:nth-child(3)::before{background-image:url('assets/illustration-color.png')}
-.menu-card:nth-child(4)::before{background-image:url('assets/illustration-recall.png')}
-.menu-card:nth-child(5)::before{background-image:url('assets/illustration-review.png')}
-.menu-card:nth-child(6)::before{background-image:url('assets/progress-lotus.png')}
+.menu-card strong{font-size:24px !important;font-family:"Batang","Nanum Myeongjo",serif !important;color:#355c3f !important;}
+.menu-card p{max-width:100% !important;margin-top:9px !important;color:#788d7d !important;font-size:14px !important;line-height:1.65 !important;}
+.menu-card .num{box-shadow:none !important;background:#eef6ee !important;border:1px solid #dae9dc;}
 
-.memory-scope{position:relative;overflow:hidden}
-.memory-scope::before{
-  content:"";
-  position:absolute;
-  right:-10px;bottom:-24px;
-  width:230px;height:130px;
-  background:url('assets/progress-lotus.png') right bottom/contain no-repeat;
-  opacity:.30;pointer-events:none;
-}
-.memory-scope::after{display:none!important}
-.memory-scope>*{position:relative;z-index:1}
+/* remove watercolor crops from content cards too */
+.memory-card,.mask-study-card{background-image:none !important;padding-top:24px !important;}
+.footer-note::after{display:none !important;}
+.footer-note{padding-bottom:0 !important;}
 
-.footer-note{position:relative;padding-bottom:18px}
-.footer-note::after{
-  content:"";display:block;margin:18px auto 0;width:min(880px,100%);height:120px;
-  background:url('assets/watercolor-pond-band.png') center bottom/cover no-repeat;opacity:.78;border-radius:22px;
-}
-
-.memory-card::before,.memory-card::after{display:none!important}
-.memory-card{
-  background-image:url('assets/illustration-memory.png');
-  background-repeat:no-repeat;
-  background-position:center 38px;
-  background-size:150px auto;
-  padding-top:180px!important;
-}
-.mask-study-card{
-  background-image:url('assets/watercolor-top-mist.png');
-  background-repeat:no-repeat;
-  background-position:right top;
-  background-size:280px auto;
-}
-
-/* interior page headings */
-.section-title,
-.toc-title,
-.quiz-top{position:relative}
-.section-title h2,.toc-title h2,.group>h2,.mask-head h3{font-family:"Batang","Nanum Myeongjo",serif!important;color:#355940!important}
-
-/* lily-pad board and watercolor quiz shell */
+/* keep quiz board clean and modern */
 .gem-board-wrap{
-  background:linear-gradient(180deg,rgba(251,253,249,.96),rgba(245,250,245,.94))!important;
-  border:1px solid rgba(208,227,210,.8)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 18px 40px rgba(82,118,87,.08)!important;
+  background:linear-gradient(180deg,#fcfefd,#f5faf6) !important;
+  border:1px solid rgba(214,231,216,.92) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 16px 34px rgba(87,121,93,.05) !important;
 }
-.gem-board-wrap::before{
-  background:url('assets/watercolor-pond-band.png') center bottom/cover no-repeat!important;
-  width:100%!important;height:92px!important;left:0!important;bottom:0!important;opacity:.10!important;border-radius:0!important;
-}
-.gem-board-wrap::after{
-  background:url('assets/corner-leaves-top-right.png') right top/contain no-repeat!important;
-  width:220px!important;height:120px!important;right:-20px!important;top:-18px!important;opacity:.12!important;border-radius:0!important;
-}
-.palette-group::after{
-  content:"";display:block;width:76px;height:50px;margin-left:auto;margin-top:-6px;
-  background:url('assets/side-fish-right.png') center/contain no-repeat;opacity:.36;
-}
+.palette-group{background:linear-gradient(180deg, rgba(248,251,248,.95), rgba(244,249,245,.92)) !important;}
 
-/* records / review subtle art */
-.card table+*{}
 @media(max-width:760px){
-  body::before{width:210px;height:158px;left:-16px;bottom:-8px;opacity:.86}
-  body::after{width:198px;height:150px;right:-8px;bottom:0;opacity:.84}
-  main.wrap::before{width:180px;height:96px;top:60px;opacity:.38}
-  .hero{padding:34px 24px 34px!important;min-height:250px!important;background-position:72% center!important}
-  .hero::before{width:160px;height:88px;opacity:.48}
-  .hero::after{width:150px;height:84px;bottom:-8px;opacity:.36}
-  .hero-fish{width:92px!important;height:56px!important;right:18px!important;bottom:16px!important;opacity:.72!important}
-  .menu-card{min-height:250px!important;padding-top:18px!important}
-  .menu-card::before{width:146px;height:108px;margin-bottom:12px}
-  .menu-card strong{font-size:24px!important}
-  .memory-card{background-size:120px auto;padding-top:156px!important}
-  .footer-note::after{height:88px}
-}
-
-
-/* ===== v5.1 explicit watercolor image rendering fix ===== */
-.hero.hero-watercolor{position:relative;overflow:hidden}
-.hero-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:0;opacity:.72;pointer-events:none}
-.hero.hero-watercolor > *:not(.hero-art){position:relative;z-index:1}
-.menu-card{justify-content:flex-start!important}
-.menu-card::before{display:none!important}
-.menu-ill{display:block!important;width:180px;max-width:78%;height:auto;object-fit:contain;margin:4px auto 14px;opacity:.98}
-.pond-footer-art{display:block;width:min(880px,100%);height:auto;margin:18px auto 0;border-radius:22px;opacity:.86}
-.footer-note::after{display:none!important}
-/* if background art fails, keep visible fallback panels */
-.memory-card{background-image:none!important;padding-top:24px!important}
-@media(max-width:760px){
-  .menu-ill{width:146px;margin-bottom:12px}
-  .hero-art{object-position:72% center;opacity:.58}
+  .hero.hero-simple,.hero.hero-watercolor,.hero{padding:34px 24px 30px !important; min-height:210px !important;}
+  .hero::before{width:88px; height:76px; right:18px; top:16px; opacity:.18;}
+  .hero::after{width:126px; height:86px; right:-10px; bottom:-8px; opacity:.12;}
+  .hero-fish{width:68px !important; height:42px !important; right:88px !important; top:28px !important; opacity:.18 !important;}
+  .menu-card{min-height:156px !important;}
 }
